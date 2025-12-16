@@ -181,7 +181,7 @@ async function run() {
     core.debug(`Clang-tidy args: ${clangTidyArgsData}`);
 
     // Execute clang-tidy
-    const clangTidyExec = await exec.getExecOutput('clang-tidy', clangTidyCmdArgs, { ignoreReturnCode: true, silent: true });
+    const clangTidyExec = await exec.getExecOutput('clang-tidy', clangTidyCmdArgs, { ignoreReturnCode: true, silent: false });
 
     // Debug print the clang-tidy output.
     core.debug(`Clang-tidy output: ${clangTidyExec.stdout}`);
