@@ -33982,11 +33982,11 @@ async function run() {
     }
 
     // Execute clang-tidy
-    let clangTidyCmdArgs = ['--quiet', '-p', buildDir, `--config-file=${clangTidyFilePath}`];
+    let clangTidyCmdArgs = ['-p', buildDir, `--config-file=${clangTidyFilePath}`];
     files.forEach(file => {
         clangTidyCmdArgs.push(file.filename);
     });
-    if (clangTidyArgs !== undefined && clangTidyArgs != '') {
+    if (clangTidyArgs !== undefined && clangTidyArgs !== '') {
         // Split the clang-tidy args by space otherwise it will be quoted as a single argument.
         const parsedClangTidyArgs = parseArgsStringToArgv(clangTidyArgs);
         // Concatenate the clang-tidy args with the clang-tidy command.
@@ -34000,11 +34000,19 @@ async function run() {
     const clangTidyArgsData = JSON.stringify(clangTidyCmdArgs, null, 4);
     lib_core.debug(`Clang-tidy args: ${clangTidyArgsData}`);
 
+    const clangTidyPath = await exec.getExecOutput('which', ["clang-tidy"], {ignoreReturnCode: false, silent: false});
+    lib_core.info(`Clang-tidy path: ${clangTidyPath.stdout}`);
+
     // Execute clang-tidy
-    const clangTidyExec = await exec.getExecOutput('clang-tidy', clangTidyCmdArgs, { ignoreReturnCode: true, silent: true });
+    const clangTidyExec = await exec.getExecOutput('clang-tidy', clangTidyCmdArgs, { ignoreReturnCode: false, silent: false });
+
+    if (clangTidyExec.exitCode !== 0) {
+        lib_core.warning(`Clang-tidy exit code not 0: ${clangTidyExec.exitCode}`);
+    }
 
     // Debug print the clang-tidy output.
     lib_core.debug(`Clang-tidy output: ${clangTidyExec.stdout}`);
+    lib_core.debug(`Clang-tidy stderr: ${clangTidyExec.stderr}`);
 
     // Parse the clang-tidy output
     const tidyIssues = parseClangTidyOutput(clangTidyExec.stdout);
@@ -34045,7 +34053,7 @@ async function run() {
     }
 }
 
-run();
+run().then(r => lib_core.info(`Run finished`));
 
 })();
 
