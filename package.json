@@ -16,7 +16,7 @@
     "@actions/github": "^6.0.0",
     "@octokit/auth-unauthenticated": "^6.0.0",
     "@octokit/rest": "^20.0.2",
-    "diff": "^5.2.0",
+    "diff": "^8.0.3",
     "string-argv": "^0.3.2"
   },
   "devDependencies": {
